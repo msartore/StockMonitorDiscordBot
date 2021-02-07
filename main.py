@@ -5,7 +5,6 @@ import cryptocompare
 import asyncio
 
 client = commands.Bot(command_prefix=".")
-deleted = 0
 
 def updateStatus(stockN, statusUpdate):
   if stockN in db.keys():
