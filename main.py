@@ -5,6 +5,7 @@ import cryptocompare
 import asyncio
 
 client = commands.Bot(command_prefix=".")
+deleted = 0
 
 def updateStatus(stockN, statusUpdate):
   if stockN in db.keys():
@@ -36,6 +37,14 @@ def checkStockName(stockN):
     return False
   else:
     return True
+  
+@client.command()
+async def purge(ctx, amount):
+  await ctx.message.delete()
+  async for message in ctx.message.channel.history(limit=int(amount)).map(lambda m: m):
+      await message.delete()
+  await ctx.send(amount+" messages deleted!")
+
 
 async def thS(arg, ctx, timer):  
   while True:
