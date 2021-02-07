@@ -18,8 +18,11 @@ def updateStatus(stockN, statusUpdate):
       return False
 
 def addToDB(stockN):
-  db[stockN] = 'run'
-  return True
+  if not stockN in db.keys():
+    db[stockN] = 'run'
+    return True
+  else:
+    return False
 
 def checkStatus(stockN):
   if stockN in db.keys():
@@ -28,6 +31,11 @@ def checkStatus(stockN):
     else:
       return False
 
+def checkStockName(stockN):
+  if cryptocompare.get_price(stockN) == None:
+    return False
+  else:
+    return True
 
 async def thS(arg, ctx, timer):  
   while True:
@@ -39,7 +47,7 @@ async def thS(arg, ctx, timer):
         await ctx.send("@everyone Buy "+arg+"!, value in euro: "+str(price))
     else:
       await ctx.send("Update "+arg+" value in euro: "+str(price))
-    await asyncio.sleep(int(timer))
+    await asyncio.sleep(60*int(timer))
     if checkStatus(arg):
       if updateStatus(arg, 'del'):
         await ctx.send(arg+" Stopped!")
@@ -68,10 +76,13 @@ async def runningStocks(ctx):
 
 @client.command()
 async def updateStock(ctx, arg, timer):
-  if addToDB(arg):
-    asyncio.get_event_loop().create_task(thS(arg, ctx, timer))
+  if checkStockName(arg):
+    if addToDB(arg):
+      asyncio.get_event_loop().create_task(thS(arg, ctx, timer))
+    else:
+      await ctx.send(arg+" already added!")
   else:
-    await ctx.send("Error, something went wrong!")
+    await ctx.send(arg+" doesn't exist!")
 
 @client.command()
 async def credits(ctx):
